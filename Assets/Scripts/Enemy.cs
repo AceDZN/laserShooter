@@ -7,6 +7,13 @@ using Random = UnityEngine.Random;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] GameObject projectilePrefab;
+    [SerializeField] GameObject deathVFX;
+    [SerializeField] float explosionDuration = 1f;
+    [SerializeField] AudioClip deathSound;
+    [SerializeField] float deathSoundVolume = 0.75f;
+    [SerializeField] AudioClip laserSound;
+    [SerializeField] float laserSoundVolume = 0.75f;
+
     [SerializeField] float projectileSpeed = 10f;
     [SerializeField] float projectileFiringPeriod = 0.1f;
 
@@ -34,14 +41,15 @@ public class Enemy : MonoBehaviour
     {
         shotCounter -= Time.deltaTime;
         if (shotCounter <= 0f) {
-            fire();
+            Fire();
             shotCounter = Random.Range(minTimeBetweenShots, maxTimeBetweenShots);
 
         };
     }
 
-    private void fire()
+    private void Fire()
     {
+        AudioSource.PlayClipAtPoint(laserSound, Camera.main.transform.position, laserSoundVolume);
         GameObject laser = Instantiate(projectilePrefab, transform.position, Quaternion.identity) as GameObject;
         laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -projectileSpeed);
         //yield return new WaitForSeconds(projectileFiringPeriod);
@@ -50,15 +58,34 @@ public class Enemy : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         DamageDealer damageDealer = other.gameObject.GetComponent<DamageDealer>();
+        if (!damageDealer) { return; };
         ProccessHit(damageDealer);
     }
 
     private void ProccessHit(DamageDealer damageDealer) {
         health -= damageDealer.GetDamage();
+        damageDealer.Hit();
         if (health <= 0)
         {
-            Destroy(gameObject);
+            Die();
         }
-    
+
     }
+
+    private void Die()
+    {
+        Destroy(gameObject);
+        GameObject explosion = Instantiate(deathVFX, transform.position, transform.rotation);
+        Destroy(explosion, explosionDuration);
+        AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position, deathSoundVolume);
+    }
+
+    private void Celebrate()
+    {
+        GameObject explosion = Instantiate(deathVFX, transform.position, transform.rotation);
+        Destroy(explosion, explosionDuration);
+        AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position, deathSoundVolume);
+    }
+
+
 }

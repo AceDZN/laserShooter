@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2750012267177743355}
   - component: {fileID: 3370262936572139579}
   - component: {fileID: 3521350909385451652}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,6 +108,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 793568581124549301, guid: 011b70a1c9a4b664cbe3f4788a3dff6a,
     type: 3}
+  deathVFX: {fileID: 4885723834043651837, guid: fcdb0d57f5b9ca040947e970f7607c41,
+    type: 3}
+  explosionDuration: 1
+  deathSound: {fileID: 8300000, guid: 485b5a42e4e4f1643959037392f51567, type: 3}
+  deathSoundVolume: 0.75
+  laserSound: {fileID: 8300000, guid: 28c3f0e4837bb8647941f97bce5bd018, type: 3}
+  laserSoundVolume: 0.5
   projectileSpeed: 10
   projectileFiringPeriod: 0.1
   health: 100

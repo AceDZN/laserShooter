@@ -10,6 +10,13 @@ public class PlayerComponent : MonoBehaviour
     [SerializeField] float padding = 0.5f;
     [SerializeField] int health = 200;
 
+    [SerializeField] GameObject deathVFX;
+    [SerializeField] float explosionDuration = 1f;
+    [SerializeField] AudioClip deathSound;
+    [SerializeField] float deathSoundVolume = 0.75f;
+    [SerializeField] AudioClip laserSound;
+    [SerializeField] float laserSoundVolume = 0.75f;
+
     [Header("Projectile")]
     [SerializeField] GameObject laserPrefab;
     [SerializeField] float projectileSpeed = 10f;
@@ -37,19 +44,27 @@ public class PlayerComponent : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         DamageDealer damageDealer = other.gameObject.GetComponent<DamageDealer>();
+        if (!damageDealer) { return; };
         ProccessHit(damageDealer);
     }
     private void ProccessHit(DamageDealer damageDealer)
     {
         health -= damageDealer.GetDamage();
-        Debug.Log(health);
-            /*
-            if (health <= 0)
-            {
-                Destroy(gameObject);
-            }*/
+        damageDealer.Hit();
+        if (health <= 0)
+        {
+            Die();
+        }
 
      
+    }
+
+    private void Die()
+    {
+        Destroy(gameObject);
+        GameObject explosion = Instantiate(deathVFX, transform.position, transform.rotation);
+        Destroy(explosion, explosionDuration);
+        AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position, deathSoundVolume);
     }
 
     IEnumerator FireContinuosly() {
@@ -57,6 +72,7 @@ public class PlayerComponent : MonoBehaviour
         {
             GameObject laser = Instantiate(laserPrefab, transform.position, Quaternion.identity) as GameObject;
             laser.GetComponent<Rigidbody2D>().velocity = new Vector2(0, projectileSpeed);
+            AudioSource.PlayClipAtPoint(laserSound, Camera.main.transform.position, laserSoundVolume);
             yield return new WaitForSeconds(projectileFiringPeriod);
         }
     }
